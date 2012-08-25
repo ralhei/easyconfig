@@ -38,6 +38,16 @@ class Section(object):
     def _options(self):
         return self.__configParser.options(self._name)
 
+    def _repr(self, indent=0):
+        spaces = indent * '\t'
+        ispaces = spaces + '\t'
+        s = ["%s<Section '%s'>" % (spaces, self._name)]
+        defaults = self.__configParser.defaults()
+        for o in self._options:
+            if not o in defaults:
+                s.append("%s%s = %s" % (ispaces, o, self[o]))
+        return '\n'.join(s)
+
     def __repr__(self):
         return self._repr()
 
@@ -56,6 +66,17 @@ class DefaultsSection(object):
     @property
     def _options(self):
         return self.__configParser.defaults().keys()
+
+    def _repr(self, indent=0):
+        spaces = indent * '\t'
+        ispaces = spaces + '\t'
+        s = ["%s<defaults>" % (spaces,)]
+        for k, v in self.__configParser.defaults().iteritems():
+            s.append("%s%s = %s" % (ispaces, k, v))
+        return '\n'.join(s)
+
+    def __repr__(self):
+        return self._repr()
 
 
 class EasyConfig(object):
@@ -78,6 +99,14 @@ class EasyConfig(object):
     @property
     def defaults(self):
         return DefaultsSection(self.__configParser)
+
+    def __repr__(self):
+        s = ['<EasyConfig>']
+        defaults = self.__configParser.defaults()
+        if defaults:
+            s.append(self.defaults._repr(indent=1))
+        s.extend([self[sec]._repr(indent=1) for sec in self._sections])
+        return '\n'.join(s)
 
     def _add(self, sectionName):
         self.__configParser.add_section(sectionName)
