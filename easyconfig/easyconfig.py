@@ -2,7 +2,7 @@
 EasyConfig module
 """
 
-from ConfigParser import SafeConfigParser, NoSectionError
+from configparser import SafeConfigParser, NoSectionError
 
 
 class Section(object):
@@ -44,7 +44,7 @@ class Section(object):
         s = ["%s<Section '%s'>" % (spaces, self._name)]
         defaults = self.__configParser.defaults()
         for o in self._options:
-            if not o in defaults:
+            if o not in defaults:
                 s.append("%s%s = %s" % (ispaces, o, self[o]))
         return '\n'.join(s)
 
@@ -71,7 +71,7 @@ class DefaultsSection(object):
         spaces = indent * '\t'
         ispaces = spaces + '\t'
         s = ["%s<defaults>" % (spaces,)]
-        for k, v in self.__configParser.defaults().iteritems():
+        for k, v in self.__configParser.defaults().items():
             s.append("%s%s = %s" % (ispaces, k, v))
         return '\n'.join(s)
 
@@ -116,5 +116,4 @@ class EasyConfigParser(SafeConfigParser):
     def __init__(self, *args, **kw):
         self.__ns = ns = kw.pop('ns', 'ns')
         setattr(self, ns, EasyConfig(self))
-        # ConfigParser is of type old-style class, so 'super' cannot be used!
-        SafeConfigParser.__init__(self, *args, **kw)
+        super().__init__(*args, **kw)

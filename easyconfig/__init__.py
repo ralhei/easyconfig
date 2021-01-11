@@ -1,1 +1,1 @@
-from easyconfig import EasyConfigParser
+from .easyconfig import EasyConfigParser
